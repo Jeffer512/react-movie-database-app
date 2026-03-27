@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
-import { fetchTrending, fetchDiscover, fetchSearchResults, fetchSimilar } from './TmdbApi';
+import { fetchTrending, fetchDiscover, fetchSearchResults, fetchSimilar } from '../service/TmdbApi';
 
 /**
- * Custom hook to handle complex pagination for the TMDb API.
+ * Handle complex pagination for the TMDb API.
  * 
  * The TMDb API returns 20 results per page. This hook manages those 20 results 
  * internally and "sub-paginates" them into smaller slices (5 or 10 items) 
@@ -13,7 +13,7 @@ import { fetchTrending, fetchDiscover, fetchSearchResults, fetchSimilar } from '
  * @param {string} genres - Comma-separated string of genre IDs
  * @param {string} query - The search term entered by the user
  * @param {number} id - The ID used for fetching 'similar' content
- * @returns {Object} - { data, nextPage, prevPage }
+ * @returns {Object} - { data, page, nextPage, prevPage }
  */
 export function useTMDbPagination(mediaType, endpoint, genres, query, id) {
   // --- INTERNAL STATE ---
@@ -66,8 +66,8 @@ export function useTMDbPagination(mediaType, endpoint, genres, query, id) {
 
     loadData();
 
-    // Cleanup: When the component re-renders or unmounts, mark the previous 
-    // request as inactive so its result doesn't overwrite newer data.
+    // Cleanup: Mark the previous request as inactive when the component 
+    // re-renders or unmounts so its result doesn't overwrite newer data.
     return () => {
       isActive = false;
     };
@@ -120,17 +120,15 @@ export function useTMDbPagination(mediaType, endpoint, genres, query, id) {
 
   // --- DERIVED STATE ---
   
-  // slicedData: The actual subset of items (5 or 10) the component will render.
-  // use useMemo to update slice when data or index changes and avoid unnecessary API calls when only the index change
+  // slicedData: The subset of items (5 or 10) the component will render.
+  // useMemo ensures the slice is only re-calculated when fullData or index changes.
   const slicedData = useMemo(() => {
     return fullData.slice(index, index + n);
   }, [fullData, index, n]);
-
-
-  // --- EXPOSED API ---
   
   return { 
     data: slicedData, // The component sees only the current slice
+    page,
     nextPage, 
     prevPage 
   };
