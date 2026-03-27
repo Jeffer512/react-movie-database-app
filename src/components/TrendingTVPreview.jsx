@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useTMDbPagination } from '../service/useTmdvPagination';
+import { useTMDbPagination } from '../hooks/useTmdbPagination';
 
 import '../style/button.css';
 import '../style/sectionCard.css';
