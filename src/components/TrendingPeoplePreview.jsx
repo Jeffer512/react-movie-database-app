@@ -1,68 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { useTMDbPagination } from '../service/useTmdbPagination';
+
 import '../style/sectionCard.css'; // Asegúrate de importar el archivo CSS
-import { useStateContext } from '../context/stateContext';
-import { useNavigate, useParams } from 'react-router-dom';
 import '../style/button.css';
 
-const API_KEY = 'c84b15de02b182bd760ca972c743c53f'; // Recuerda reemplazar 'tu_api_key' con tu clave de API de TMDb
-
+/**
+ * Renders a preview section for trending people with pagination.
+ */
 const TrendingPeoplePreview = () => {
   const navigate = useNavigate();
-  const [people, setPeople] = useState([]);
-  const { searchType, setSearchType, id, setId } = useStateContext();
 
-  const [index, setIndex] = useState(0);
-  const [page, setPage] = useState(1);
-
-  useEffect(() => {
-    const fetchPeople = async () => {
-      try {
-        const res = await axios.get(`https://api.themoviedb.org/3/trending/person/day?api_key=${API_KEY}&page=${page}`);
-        setPeople(res.data.results.slice(index, index+5)); // Limitar el número de personas a 5
-      } catch (error) {
-        console.error('Error fetching trending people:', error);
-      }
-    };
-
-    fetchPeople();
-  }, [index, page]);
-
-  // Funcion para mostrar los 10 resultados siguientes
-  const nextPage = () => {
-    if (index === 0) {
-      setIndex(index + 10);
-    }else{
-      setPage(page + 1);
-      setIndex(0);
-    }
-  };
-
-  // Funcion para mostrar los 10 resultados anteriores
-  const previousPage = () => {
-    if (page === 1 && index === 0) {
-      return;
-    }
-    else if (!(index === 0)) {
-      setIndex(index - 5);
-    }else{
-      setPage(page - 1);
-      setIndex(15);
-    }
-  };
-
+  // Use custom hook to handle data fetching and pagination state
+  // Rename 'data' to 'people' for clarity within this component
+  const {data: people, nextPage, prevPage} = useTMDbPagination('person', 'trending');
+  
   return (
     <div id="trendingPeoplePreview">
       <div className="trendingPreview-container">
         <h2 >Trending People Today</h2>
         <div className="trendingPreview-movieList">
-          {people.map((person) => (
+          {people.slice(0,5).map((person) => (
             <div key={person.id} className="persson-container">
               <img
                 className="persson-img"
                 src={`https://image.tmdb.org/t/p/w300${person.profile_path}`}
                 alt={person.name}
-                onClick={() => (setId(person.id), setSearchType('person'), navigate(`/person/${person.id}/${person.name}`))}
+                // Navigate using URL parameters; Details page will extract ID and type from the path
+                onClick={() => (navigate(`/person/${person.id}/${person.name}`))}
               />
               <h3>{person.name}</h3>
             </div>
@@ -70,7 +34,7 @@ const TrendingPeoplePreview = () => {
         </div>
       </div>
       <div className='next-previous-container'>  
-        <button className="previous-page" onClick={previousPage}>Previous</button>
+        <button className="previous-page" onClick={prevPage}>Previous</button>
         <button className="next-page" onClick={nextPage}>Next</button>
       </div>  
     </div>
