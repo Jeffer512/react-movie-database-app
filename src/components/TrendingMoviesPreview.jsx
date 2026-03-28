@@ -19,7 +19,7 @@ const TrendingMoviesPreview = () => {
       <div className="trendingPreview-container">
       <h2 className='trending-movies-text'>Trending Movies Today</h2>
         <div className="trendingPreview-movieList">
-          {movies.slice(0, 10).map((movie) => (
+          {movies.map((movie) => (
             <div key={movie.id} className="movie-container">
               <img
                 className="movie-img"

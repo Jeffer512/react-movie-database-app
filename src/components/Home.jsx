@@ -13,9 +13,7 @@ function Home() {
         <SearchComponent/>
       </nav>
       <main>
-        <TrendingMoviesPreview 
-        start = {2}
-        end = {5}/>
+        <TrendingMoviesPreview />
 
         <TrendingTVPreview />
         <TrendingPeoplePreview />

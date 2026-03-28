@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from 'react';
 import ResultsPage from "./ResultsPage";
 import SearchComponent from "./SearchComponent";
 import '../style/resultspage.css'

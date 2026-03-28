@@ -19,7 +19,7 @@ const TrendingPeoplePreview = () => {
       <div className="trendingPreview-container">
         <h2 >Trending People Today</h2>
         <div className="trendingPreview-movieList">
-          {people.slice(0,5).map((person) => (
+          {people.map((person) => (
             <div key={person.id} className="persson-container">
               <img
                 className="persson-img"
