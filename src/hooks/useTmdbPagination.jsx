@@ -49,7 +49,7 @@ export function useTMDbPagination(mediaType, endpoint, genres, query, id) {
           response = await fetchDiscover(mediaType, genres, page);
         } else if (endpoint === 'search' && query) {
           response = await fetchSearchResults(mediaType, query, page);
-        } else if (endpoint === 'similar' && id) {
+        } else if (endpoint === 'similar' && id && mediaType !== 'person') {
           response = await fetchSimilar(mediaType, id, page);
         }
 
