@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { fetchSearchResults } from '../service/TmdbApi';
 import { useStateContext } from '../context/stateContext';
@@ -18,7 +18,7 @@ const SearchComponent = () => {
   const [showDropdown, setShowDropdown] = useState(false);
 
   const { searchType, setSearchType, query, setQuery, setEndpoint } = useStateContext();
-
+  const searchRef = useRef(null);
   // Sync local searchType with URL parameters if they change
   useEffect(() => {
     if (type) setSearchType(type);
@@ -53,6 +53,23 @@ const SearchComponent = () => {
     return () => clearTimeout(delayDebounceFn);
   }, [query, searchType]);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // If the searchRef exists and the clicked element is NOT inside the searchRef
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    // Add listener to the whole document
+    document.addEventListener('mousedown', handleClickOutside);
+
+    // Cleanup: remove listener when component unmounts
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   /**
    * Handle full search submission (Enter key or Search button)
    */
@@ -78,7 +95,7 @@ const SearchComponent = () => {
   };
 
   return (
-    <div className="search-container">
+    <div className="search-container" ref={searchRef}>
       <Link to={'/'}><CiHome onClick={() => setQuery("")} className='home-icon' /></Link>
         <form onSubmit={handleSearch}>
           <div>
@@ -93,6 +110,7 @@ const SearchComponent = () => {
               type="text" 
               value={query} 
               onChange={(e) => {setQuery(e.target.value); setShowDropdown(true);}} 
+              onFocus={() => query && setShowDropdown(true)} 
               placeholder="Buscar..."
             />
           </div>
