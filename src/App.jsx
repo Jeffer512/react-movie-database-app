@@ -14,8 +14,8 @@ function App() {
     <StateContext>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/search/:type/:search" element={<Filter />} />
-          <Route path="/:search/:ID/:search" element={<Details />} />
+          <Route path="/search/:type/:searchValue" element={<Filter />} />
+          <Route path="/:searchType/:ID/:name" element={<Details />} />
           <Route path="/:searchType/:ID" element={<Details />} />
         </Routes>
         <footer>
