@@ -29,7 +29,7 @@ export function useTMDbPagination(mediaType, endpoint, genres, query, id) {
 
   // n: The number of items to display at once. 
   // People and Similar lists use a smaller slice (5) for better layout.
-  const n = (mediaType === 'person' || endpoint === 'similar') ? 5 : 10;
+  const n = ((mediaType === 'person' && endpoint === 'trending') || endpoint === 'similar') ? 5 : 10;
 
   // --- DATA FETCHING EFFECT ---
   
