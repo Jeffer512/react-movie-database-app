@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useStateContext } from "../context/stateContext";
 
-
+// Static list of genres supported by the TMDb API
 const constant_genres = [
   { id: 28, name: "Action" },
   { id: 12, name: "Adventure" },
@@ -24,52 +24,59 @@ const constant_genres = [
   { id: 37, name: "Western" },
 ];
 
+/**
+ * GenreFilter Component
+ * Provides a dropdown to select genres and displays currently active filters.
+ */
 const GenreFilter = ({ genre, setGenre }) => {
-
   const { endpoint, setEndpoint } = useStateContext();
 
+  /**
+   * Handle genre selection.
+   * Toggles the genre ID in the comma-separated string and switches endpoint to 'discover'.
+   */
   const handleSelect = (e) => {
-      if (genre.includes(e.target.value + ",")) {
-        setGenre(genre.replace(e.target.value + ",", ""));
+      const val = e.target.value;
+      if (genre.includes(val + ",")) {
+        setGenre(genre.replace(val + ",", ""));
         return;
       }
-      setGenre(genre + e.target.value + ",");
-      setEndpoint('discover')
+      setGenre(genre + val + ",");
+      setEndpoint('discover');
   };
 
+  /**
+   * Effect: Clear selected genres if the user switches to a non-discovery endpoint 
+   * (e.g., performing a new text search).
+   */
   useEffect(() => {
     if (endpoint !== 'discover') {
       setGenre('');
     }
-  }, [endpoint])
+  }, [endpoint, setGenre]);
   
   return(
       <div className='select-genders'>
-          {/* Selection para seleccionar el genero */}
           <h2>Seleccione el genero</h2>
-          <select onClick={handleSelect}>
+          <select onChange={handleSelect}>
             {constant_genres.map((element) => (
               <option key={element.id} value={element.id}>
                 {element.name}
               </option>
             ))}
           </select>
+
           <span> Generos seleccionados: </span>
-          {/* // imprimir genero seleccionado, no por numero si no por nombre */}
           <div>
+            {/* Parse the genre string and map IDs back to human-readable names */}
             {genre.split(",").map((element) => {
-                if (endpoint !== 'discover') {
-                  return;
+                if (endpoint !== 'discover' || element === "") {
+                  return null;
                 }
-                if (element === "") {
-                  return;
-                }
+                const foundGenre = constant_genres.find((g) => g.id === parseInt(element));
                 return (
                   <p key={element}>
-                    {
-                      constant_genres.find((genre) => genre.id === parseInt(element))
-                        .name
-                    }
+                    {foundGenre ? foundGenre.name : ''}
                   </p>
                 );
               })
